@@ -1,0 +1,1355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#123d2d">
+<title>EcoMind | Intelligent Waste Management</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap');
+:root {
+  --dark:#123629;--green:#226b49;--green2:#3b9463;--lime:#d3f39a;
+  --bg:#f5f8f5;--white:#fff;--text:#1d2c23;--muted:#78857c;
+  --line:#e4ebe5;--soft:#edf6ef;--shadow:0 12px 32px #193d2910;
+  --radius:18px;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:14px "DM Sans",sans-serif;line-height:1.6}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid #76b98a66;outline-offset:2px}
+.sidebar{position:fixed;inset:0 auto 0 0;width:245px;background:var(--dark);color:white;padding:27px 17px;display:flex;flex-direction:column;z-index:20}
+.brand{display:flex;align-items:center;gap:12px;padding:0 10px 35px}
+.brand-icon{width:43px;height:43px;background:var(--lime);color:var(--dark);border-radius:14px;display:grid;place-items:center;font-size:25px}
+.brand-name{font:800 22px Manrope,sans-serif;letter-spacing:-1px}
+.brand-sub{color:#a6c8b2;font-size:10px;letter-spacing:1.5px;text-transform:uppercase}
+.nav-label{font-size:10px;color:#8eae98;letter-spacing:1.6px;font-weight:800;padding:0 12px;margin-bottom:12px}
+.nav-list{display:grid;gap:7px}
+.nav-item{width:100%;display:flex;align-items:center;gap:12px;border:0;background:transparent;color:#c0d3c6;border-radius:12px;padding:13px;text-align:left;font-weight:600;transition:.2s}
+.nav-item:hover{background:#ffffff12;color:white}
+.nav-item.active{background:#ffffff17;color:white;box-shadow:inset 3px 0 var(--lime)}
+.nav-icon{font-size:18px;width:22px;text-align:center}
+.sidebar-bottom{margin-top:auto}
+.eco-note{padding:16px;border:1px solid #ffffff20;background:#ffffff08;border-radius:15px}
+.eco-note .leaf{font-size:25px}
+.eco-note strong{display:block;font-size:13px;margin-top:5px}
+.eco-note p{font-size:11px;color:#b0c9b8;margin:6px 0 0}
+.side-footer{font-size:10px;color:#83a28d;padding:18px 8px 0}
+.main{margin-left:245px;min-height:100vh}
+.topbar{height:74px;display:flex;align-items:center;justify-content:space-between;padding:0 34px;background:#ffffffeb;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10;backdrop-filter:blur(12px)}
+.crumb{font-size:12px;color:var(--muted)}
+.crumb strong{color:var(--text)}
+.top-right{display:flex;align-items:center;gap:13px}
+.status{background:var(--soft);border:1px solid #dce9df;color:var(--green);padding:7px 11px;border-radius:30px;font-size:11px;font-weight:700}
+.dot{display:inline-block;width:7px;height:7px;background:#43a56a;border-radius:50%;margin-right:6px}
+.avatar{width:37px;height:37px;border-radius:12px;background:#e0f0e4;color:var(--green);display:grid;place-items:center;font-weight:800}
+.mobile-menu{display:none;border:1px solid var(--line);background:white;padding:8px 12px;border-radius:9px}
+.content{max-width:1450px;margin:auto;padding:30px 34px 45px}
+.page{display:none;animation:appear .25s ease}
+.page.active{display:block}
+@keyframes appear{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+h1,h2,h3,p{margin-top:0}
+h1{font:800 clamp(26px,3vw,35px)/1.2 Manrope,sans-serif;letter-spacing:-1px;margin-bottom:8px}
+h2{font:800 18px Manrope,sans-serif;letter-spacing:-.4px;margin-bottom:5px}
+h3{font:700 14px Manrope,sans-serif;margin-bottom:5px}
+.eyebrow{font-size:10px;letter-spacing:1.7px;text-transform:uppercase;font-weight:800;color:var(--green2);margin-bottom:8px}
+.muted{color:var(--muted);font-size:12px}
+.page-heading{display:flex;justify-content:space-between;align-items:flex-end;gap:15px;margin-bottom:24px}
+.btn{border:1px solid transparent;border-radius:11px;padding:10px 15px;font-weight:700;font-size:12px;transition:.2s}
+.btn-primary{background:var(--green);color:white;box-shadow:0 5px 13px #226b4920}
+.btn-primary:hover{background:#185537;transform:translateY(-1px)}
+.btn-secondary{background:white;color:var(--green);border-color:#dce7de}
+.btn-secondary:hover{background:var(--soft)}
+.btn-danger{background:white;color:#b34444;border-color:#efd7d7}
+.btn-danger:hover{background:#fff0ef}
+.btn:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.panel{background:white;border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+.panel-head{padding:21px 23px 0;display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.panel-body{padding:21px 23px 24px}
+.panel-sub{font-size:11px;color:var(--muted);margin:4px 0 0}
+.hero{padding:32px;background:linear-gradient(115deg,#143c2c,#226542 65%,#3b8050);border-radius:23px;color:white;display:grid;grid-template-columns:1fr auto;align-items:center;gap:25px;margin-bottom:27px;position:relative;overflow:hidden;box-shadow:0 15px 35px #153d2e20}
+.hero:after{content:"";position:absolute;width:240px;height:240px;border:1px solid #ffffff22;border-radius:50%;right:55px;top:-150px;box-shadow:0 0 0 35px #ffffff09,0 0 0 70px #ffffff07}
+.hero-content{position:relative;z-index:1;max-width:680px}
+.hero-tag{display:inline-block;background:#ffffff18;border:1px solid #ffffff24;border-radius:30px;padding:6px 11px;font-size:10px;letter-spacing:1px;margin-bottom:14px}
+.hero h1{color:white;font-size:clamp(27px,3.4vw,40px);max-width:650px}
+.hero p{color:#d4e5d9;max-width:550px;font-size:13px;margin-bottom:20px}
+.hero .btn{background:var(--lime);color:var(--dark)}
+.hero-art{width:145px;height:145px;display:grid;place-items:center;background:#ffffff12;border:1px solid #ffffff30;border-radius:50%;font-size:72px;position:relative;z-index:1}
+.stat-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:15px;margin-bottom:23px}
+.stat-card{padding:19px;background:white;border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);min-width:0}
+.stat-top{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:17px}
+.stat-icon{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font-size:19px;flex-shrink:0}
+.green-bg{background:#e5f4e8}.blue-bg{background:#e8f1ff}.yellow-bg{background:#fff3da}.purple-bg{background:#f0eaff}
+.stat-tag{font-size:9px;font-weight:800;color:var(--green);background:var(--soft);padding:4px 7px;border-radius:6px}
+.stat-value{font:800 27px/1.2 Manrope,sans-serif;letter-spacing:-1px;overflow-wrap:anywhere;margin-bottom:5px}
+.stat-label{font-size:11px;color:var(--muted)}
+.dashboard-grid{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr);gap:18px;margin-bottom:20px}
+.bar-list{display:grid;gap:16px}
+.bar-row{display:grid;gap:7px}
+.bar-label{display:flex;justify-content:space-between;gap:10px;font-size:11px}
+.bar-track,.daily-track,.score-track{height:8px;background:#edf2ee;border-radius:50px;overflow:hidden}
+.bar-fill{height:100%;background:linear-gradient(90deg,#34865b,#8fce8c);border-radius:50px;transition:width .5s}
+.mode-fill{background:linear-gradient(90deg,#4e74b7,#8eb8ef)}
+.daily-list{display:grid;gap:12px}
+.daily-row{display:grid;grid-template-columns:72px 1fr 25px;gap:9px;align-items:center;font-size:10px}
+.daily-fill{height:100%;background:var(--green2);border-radius:50px}
+.recent-list{display:grid}
+.recent-item{padding:13px 0;border-bottom:1px solid #edf1ed;display:flex;align-items:center;gap:11px}
+.recent-item:last-child{border-bottom:0}
+.recent-symbol{width:36px;height:36px;border-radius:11px;background:var(--soft);display:grid;place-items:center;font-size:17px}
+.recent-main{flex:1;min-width:0}
+.recent-main strong{display:block;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.recent-main span{font-size:10px;color:var(--muted)}
+.recent-category{font-size:9px;font-weight:700;color:var(--green);background:var(--soft);padding:4px 7px;border-radius:6px}
+.advisor-layout{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(300px,.9fr);gap:20px;align-items:start}
+.form-grid{display:grid;gap:18px}
+.field{display:grid;gap:7px}
+.field label{font-size:12px;font-weight:700}
+.field-hint{font-size:10px;color:var(--muted)}
+.field input,.field textarea,.field select{width:100%;border:1px solid #dce6de;border-radius:11px;padding:12px 13px;background:#fcfdfc;color:var(--text);transition:.2s}
+.field textarea{min-height:130px;resize:vertical}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--green2);background:white;outline:3px solid #4b9b6d18}
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:3px}
+.chip{border:1px solid #dfe9e1;background:#f7faf7;color:var(--green);padding:6px 9px;border-radius:8px;font-size:10px;font-weight:600}
+.chip:hover{background:#e3f2e6}
+.prompt-options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.prompt-option{position:relative}
+.prompt-option input{position:absolute;opacity:0;width:1px;height:1px}
+.prompt-option label{display:block;height:100%;border:1px solid #dfe8e0;border-radius:11px;padding:11px 9px;background:#fbfdfb;cursor:pointer}
+.prompt-option label strong{display:block;font-size:11px;margin-bottom:3px}
+.prompt-option label span{display:block;font-size:9px;color:var(--muted);line-height:1.5}
+.prompt-option input:checked+label{border-color:var(--green2);background:var(--soft);box-shadow:inset 0 0 0 1px var(--green2)}
+.prompt-option input:focus-visible+label{outline:3px solid #4b9b6d40}
+.full-btn{width:100%;padding:13px;font-size:13px}
+.result-empty{min-height:310px;display:grid;place-items:center;text-align:center;padding:30px}
+.empty-icon{width:76px;height:76px;margin:0 auto 15px;border-radius:24px;background:var(--soft);display:grid;place-items:center;font-size:34px}
+.result-empty p{font-size:12px;color:var(--muted);max-width:270px;margin:0 auto}
+.result-content{padding:22px}
+.result-badge{display:inline-block;padding:5px 8px;border-radius:6px;background:var(--soft);color:var(--green);font-size:9px;font-weight:800;letter-spacing:.8px}
+.result-category{font:800 23px Manrope,sans-serif;margin:12px 0 17px}
+.result-section{border-top:1px solid var(--line);padding-top:14px;margin-top:14px}
+.result-section h3{font-size:12px}
+.result-section p{font-size:12px;color:#59675e;white-space:pre-wrap;overflow-wrap:anywhere;margin:0}
+.followup-box{margin:17px 22px 22px;border:1px solid #f0dcae;background:#fff8e8;border-radius:13px;padding:15px}
+.followup-box p{font-size:12px;font-weight:700;margin-bottom:10px}
+.followup-box textarea{min-height:75px}
+.followup-box .btn{margin-top:10px}
+.tip-card{margin-top:18px;border-radius:15px;padding:17px;background:#eaf5eb;display:flex;gap:12px}
+.tip-card strong{display:block;color:var(--dark);font-size:12px;margin-bottom:4px}
+.tip-card p{color:#5b7362;font-size:11px;margin:0}
+.notice{border:1px solid #dce9de;background:#f4faf5;color:#4e6856;border-radius:11px;padding:12px 14px;font-size:11px}
+.table-wrap{overflow-x:auto;width:100%}
+table{width:100%;border-collapse:collapse;min-width:620px}
+th{color:#75847a;background:#f8faf8;font-size:10px;text-transform:uppercase;letter-spacing:.7px;text-align:left;padding:13px 16px;white-space:nowrap}
+td{border-top:1px solid #edf1ed;padding:14px 16px;font-size:11px;vertical-align:middle}
+tbody tr:hover{background:#fbfdfb}
+.table-main{font-weight:700;max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mode-badge{display:inline-block;border-radius:6px;padding:4px 7px;background:#edf3ff;color:#3d619b;font-size:9px;font-weight:800;white-space:nowrap}
+.empty-row{text-align:center;padding:35px;color:var(--muted)}
+.table-actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.search-input{border:1px solid #dce6de;border-radius:10px;padding:9px 12px;min-width:200px}
+.mini-btn{border:1px solid #e6ece7;background:white;border-radius:8px;padding:6px 8px;font-size:10px;font-weight:700}
+.mini-btn:hover{background:var(--soft);color:var(--green)}
+.evaluation-form{display:grid;grid-template-columns:1fr 220px auto;gap:12px;align-items:end}
+.evaluation-results{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px;margin-top:20px}
+.eval-card{border:1px solid var(--line);border-radius:15px;overflow:hidden;background:white}
+.eval-card-head{background:#f7faf7;border-bottom:1px solid var(--line);padding:15px}
+.eval-card-head strong{display:block;font:800 13px Manrope,sans-serif}
+.eval-score{font:800 26px Manrope,sans-serif;color:var(--green);margin-top:8px}
+.eval-card-body{padding:15px}
+.eval-card-body p{font-size:11px;color:#58665d;white-space:pre-wrap;overflow-wrap:anywhere}
+.score-fill{height:100%;background:var(--green2);border-radius:50px}
+.evaluation-note{margin-top:17px;padding:13px 15px;border-radius:11px;background:#fff8e9;color:#85662c;font-size:11px}
+.toast{position:fixed;bottom:22px;right:22px;z-index:100;background:var(--dark);color:white;padding:13px 17px;border-radius:12px;box-shadow:0 12px 30px #0002;max-width:min(400px,calc(100vw - 44px));font-size:12px;display:none}
+.toast.show{display:block;animation:appear .2s}
+.toast.error{background:#8c3333}
+.spinner{display:inline-block;width:15px;height:15px;border:2px solid #ffffff55;border-top-color:currentColor;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:7px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-block{padding:28px;text-align:center;color:var(--muted);font-size:12px}
+.loading-block .spinner{width:20px;height:20px;border-color:#d9e8dc;border-top-color:var(--green);margin-bottom:10px}
+.footer{text-align:center;color:#8b988f;font-size:10px;padding:24px 0 0}
+@media(max-width:1150px){.sidebar{width:220px}.main{margin-left:220px}.content{padding:26px 24px 38px}.topbar{padding:0 24px}.stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.hero-art{width:115px;height:115px;font-size:58px}}
+@media(max-width:850px){.sidebar{transform:translateX(-100%);transition:transform .25s;box-shadow:12px 0 30px #0002}.sidebar.open{transform:translateX(0)}.main{margin-left:0}.mobile-menu{display:inline-block}.topbar{padding:0 18px}.topbar-left{display:flex;align-items:center;gap:12px}.content{padding:23px 18px 35px}.advisor-layout{grid-template-columns:1fr}.evaluation-form{grid-template-columns:1fr 1fr}.evaluation-form .btn{grid-column:1/-1}.evaluation-results{grid-template-columns:1fr}}
+@media(max-width:600px){.topbar{height:64px}.crumb{display:none}.status{font-size:0;padding:9px}.dot{margin:0}.content{padding:19px 13px 30px}.page-heading{align-items:flex-start;flex-direction:column}.page-heading .btn{width:100%}.hero{padding:23px 21px;grid-template-columns:1fr}.hero-art{display:none}.hero h1{font-size:28px}.stat-grid{gap:10px}.stat-card{padding:14px}.stat-value{font-size:23px}.stat-top{margin-bottom:12px}.dashboard-grid{grid-template-columns:1fr}.panel-head{padding:18px 17px 0}.panel-body{padding:17px}.prompt-options{grid-template-columns:1fr}.prompt-option label{padding:10px 12px}.evaluation-form{grid-template-columns:1fr}.evaluation-form .btn{grid-column:auto}.search-input{width:100%;min-width:0}.table-actions{width:100%}.table-actions .btn{flex:1}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+body.welcome-screen #sidebar {
+    display: none !important;
+}
+
+body:not(.welcome-screen) #sidebar {
+    display: flex;
+}
+
+.welcome-layout {
+    min-height: 90vh;
+    padding: 35px 6%;
+    background: linear-gradient(120deg, #073b2b, #0b6040, #123d2b);
+    color: white;
+    border-radius: 18px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden;
+}
+
+.welcome-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.welcome-logo {
+    font-size: 25px;
+    font-weight: 800;
+    color: #b7f36b;
+}
+
+.welcome-tagline,
+.welcome-label {
+    color: #b7e8a0;
+    font-size: 12px;
+    letter-spacing: 2px;
+    font-weight: 700;
+}
+
+.welcome-main {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 30px;
+    padding: 65px 0;
+}
+
+.welcome-content {
+    max-width: 600px;
+}
+
+.welcome-content h1 {
+    font-size: clamp(34px, 5vw, 55px);
+    line-height: 1.15;
+    margin: 15px 0;
+    color: white;
+}
+
+.welcome-content h1 span {
+    display: block;
+    color: #b7f36b;
+}
+
+.welcome-description {
+    color: #d2e8d9;
+    line-height: 1.8;
+    font-size: 16px;
+    max-width: 520px;
+    margin-bottom: 28px;
+}
+
+.welcome-content .btn {
+    background: #a9ed58;
+    color: #123b26;
+    font-weight: 700;
+    padding: 14px 25px;
+    border: none;
+    border-radius: 9px;
+    cursor: pointer;
+}
+
+.welcome-illustration {
+    text-align: center;
+    min-width: 220px;
+}
+
+.eco-circle {
+    width: 210px;
+    height: 210px;
+    border-radius: 50%;
+    background: linear-gradient(145deg, #b8ef69, #288c53);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: auto;
+    box-shadow: 0 0 45px #82d65b55;
+}
+
+.eco-circle span {
+    font-size: 115px;
+    color: #07502e;
+}
+
+.welcome-illustration p {
+    color: #c4ee9b;
+    font-weight: 600;
+    margin-top: 18px;
+}
+
+.eco-decoration {
+    font-size: 25px;
+}
+
+.welcome-features {
+    display: flex;
+    justify-content: space-around;
+    gap: 15px;
+    flex-wrap: wrap;
+    border-top: 1px solid #ffffff30;
+    border-bottom: 1px solid #ffffff30;
+    padding: 22px 5px;
+}
+
+.welcome-features div {
+    color: #b7f36b;
+    font-size: 17px;
+}
+
+.welcome-features span {
+    color: white;
+    font-size: 14px;
+    margin-left: 6px;
+}
+
+.welcome-footer {
+    text-align: center;
+    color: #b8d8c1;
+    font-size: 13px;
+    padding-top: 20px;
+}
+
+@media (max-width: 700px) {
+    .welcome-main {
+        flex-direction: column;
+        text-align: center;
+        padding: 45px 0;
+    }
+
+    .welcome-description {
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .welcome-illustration {
+        min-width: auto;
+    }
+
+    .eco-circle {
+        width: 150px;
+        height: 150px;
+    }
+
+    .eco-circle span {
+        font-size: 85px;
+    }
+}
+
+</style>
+</head>
+<body>
+  <aside class="sidebar" id="sidebar">
+  <div class="brand"><div class="brand-icon">♻</div><div><div class="brand-name">EcoMind</div><div class="brand-sub">Waste Intelligence</div></div></div>
+  <div class="nav-label">Workspace</div>
+  <nav class="nav-list" aria-label="Main navigation">
+    <button class="nav-item active" data-page="advisor"><span class="nav-icon">✳</span> AI Waste Advisor</button>
+    <button class="nav-item" data-page="dashboard"><span class="nav-icon">▦</span> Insights Dashboard</button>
+    <button class="nav-item" data-page="evaluation"><span class="nav-icon">⌘</span> Prompt Evaluation</button>
+    <button class="nav-item" data-page="history"><span class="nav-icon">◷</span> Recommendation History</button>
+  </nav>
+  <div class="sidebar-bottom"><div class="eco-note"><div class="leaf">🌱</div><strong>Small choices. Lasting impact.</strong><p>Make informed waste decisions and discover sustainable ways to reuse, recycle and dispose.</p></div><div class="side-footer">EcoMind · AI-powered sustainability</div></div>
+</aside>
+
+<main class="main">
+<header class="topbar">
+  <div class="topbar-left"><button class="mobile-menu" id="mobileMenu" aria-label="Toggle navigation">☰</button><div class="crumb">Workspace <span style="padding:0 7px;color:#b7c2ba">/</span><strong id="breadcrumbTitle">AI Waste Advisor</strong></div></div>
+  <div class="top-right"><span class="status"><span class="dot"></span>AI workspace</span><div class="avatar">E</div></div>
+</header>
+
+<div class="content">
+<section class="page active" id="page-advisor">
+  <div class="hero">
+    <div class="hero-content"><div class="hero-tag">✦ INTELLIGENT WASTE ASSISTANT</div><h1>Make your next waste decision a smarter one.</h1><p>Describe an item or waste situation. Get AI-powered guidance on classification, reuse, recycling and responsible disposal.</p><button class="btn" id="heroStart">✳ &nbsp; Get a recommendation ↗</button></div>
+    <div class="hero-art" aria-hidden="true">♻️</div>
+  </div>
+  <div class="page-heading"><div><div class="eyebrow">AI-powered guidance</div><h1>Waste Advisor</h1><p class="muted">Describe your waste and discover a more responsible next step.</p></div></div>
+  <div class="advisor-layout">
+    <div class="panel" id="advisorFormPanel">
+      <div class="panel-head"><div><h2>Describe your waste</h2><p class="panel-sub">More detail can help the AI provide relevant guidance.</p></div><span class="stat-icon green-bg">♻</span></div>
+      <div class="panel-body">
+        <form id="advisorForm" class="form-grid">
+          <div class="field"><label for="wasteDescription">Waste description <span style="color:#b34444">*</span></label><textarea id="wasteDescription" maxlength="1500" placeholder="Example: A used plastic water bottle with its cap and label..." required></textarea><div class="field-hint">Describe the material, condition or other relevant details.</div><div class="chips"><button type="button" class="chip" data-example="Used plastic water bottle">Plastic bottle</button><button type="button" class="chip" data-example="Vegetable peels and leftover food">Food scraps</button><button type="button" class="chip" data-example="Old mobile phone with a damaged battery">Old electronics</button><button type="button" class="chip" data-example="Clean cardboard packaging">Cardboard</button></div></div>
+          <div class="field"><label for="wasteCategory">Known category <span class="muted">(optional)</span></label><select id="wasteCategory"><option value="Auto-detect">Let AI identify the category</option><option value="Biodegradable">Biodegradable / Organic</option><option value="Recyclable">Recyclable</option><option value="Plastic">Plastic</option><option value="Paper">Paper / Cardboard</option><option value="Glass">Glass</option><option value="Metal">Metal</option><option value="Electronic Waste">Electronic Waste (E-waste)</option><option value="Hazardous">Hazardous Waste</option><option value="General Waste">General / Residual Waste</option><option value="Other">Other / Unsure</option></select></div>
+          <div class="field"><label>Prompting method</label><div class="prompt-options">
+            <div class="prompt-option"><input type="radio" name="promptMode" id="modeZero" value="zero-shot" checked><label for="modeZero"><strong>Zero-shot</strong><span>Direct instructions without examples</span></label></div>
+            <div class="prompt-option"><input type="radio" name="promptMode" id="modeOne" value="one-shot"><label for="modeOne"><strong>One-shot</strong><span>Instructions with one example</span></label></div>
+            <div class="prompt-option"><input type="radio" name="promptMode" id="modeFew" value="few-shot"><label for="modeFew"><strong>Few-shot</strong><span>Instructions with multiple examples</span></label></div>
+          </div></div>
+          <button class="btn btn-primary full-btn" id="getAdviceBtn" type="submit">Generate AI recommendation ↗</button>
+        </form>
+      </div>
+    </div>
+    <div>
+      <div class="panel"><div class="panel-head"><div><h2>Your recommendation</h2><p class="panel-sub">Practical guidance for a more sustainable choice.</p></div><span class="stat-icon yellow-bg">✦</span></div><div id="recommendationResult"><div class="result-empty"><div><div class="empty-icon">🌿</div><h3>Your next step starts here</h3><p>Submit a waste description to receive a category, practical advice and a suggested action.</p></div></div></div></div>
+      <div class="tip-card"><div style="font-size:22px">💡</div><div><strong>Good to know</strong><p>Local collection rules vary. For batteries, chemicals and electronic waste, check an authorised local collection service before disposal.</p></div></div>
+    </div>
+  </div>
+  
+  <div class="panel" style="margin-top:22px">
+    <div class="panel-head">
+      <div>
+        <h2>AI Waste Image Classification</h2>
+        <p class="panel-sub">Upload a waste image to identify its category and receive recycling guidance.</p>
+      </div>
+      <span class="stat-icon green-bg">📷</span>
+    </div>
+
+    <div class="panel-body">
+      <form id="imageForm" class="form-grid">
+        <div class="field">
+          <label for="wasteImage">Choose a waste image</label>
+          <input
+            type="file"
+            id="wasteImage"
+            accept="image/jpeg,image/png,image/webp"
+            required
+          >
+          <div class="field-hint">Supported formats: JPG, PNG and WEBP. Maximum size: 5 MB.</div>
+        </div>
+
+        <div id="imagePreviewContainer" style="display:none">
+          <h3>Image preview</h3>
+          <img
+            id="imagePreview"
+            alt="Selected waste image preview"
+            style="max-width:100%;max-height:260px;object-fit:contain;border-radius:12px;border:1px solid var(--line)"
+          >
+        </div>
+
+        <button class="btn btn-primary full-btn" id="classifyImageBtn" type="submit">
+          Identify Waste from Image ↗
+        </button>
+      </form>
+
+      <div id="imageResult" style="margin-top:20px"></div>
+    </div>
+  </div>
+
+</section>
+
+
+<section class="page" id="page-welcome">
+  <div class="welcome-layout">
+
+    <div class="welcome-top">
+      <span class="welcome-logo">♻ EcoMind</span>
+      <span class="welcome-tagline">WASTE INTELLIGENCE</span>
+    </div>
+
+    <div class="welcome-main">
+      <div class="welcome-content">
+        <p class="welcome-label">SMARTER WASTE MANAGEMENT</p>
+
+        <h1>
+          Make Every Waste Decision
+          <span>Smarter & Greener.</span>
+        </h1>
+
+        <p class="welcome-description">
+          Discover smarter ways to manage waste, identify recyclable
+          materials and make environmentally responsible decisions
+          with AI-powered guidance.
+        </p>
+
+        <button class="btn btn-primary" id="exploreEcoMind">
+          Explore EcoMind →
+        </button>
+      </div>
+
+      <div class="welcome-illustration">
+        <div class="eco-circle">
+          <span>♻</span>
+        </div>
+        <p>Think Green. Live Green.</p>
+        <span class="eco-decoration">🌿</span>
+      </div>
+    </div>
+
+    <div class="welcome-features">
+      <div>♻ <span>Smart Waste Advice</span></div>
+      <div>📷 <span>AI Image Classification</span></div>
+      <div>🌱 <span>Sustainable Solutions</span></div>
+    </div>
+
+    <div class="welcome-footer">
+      EcoMind · AI-powered sustainability
+    </div>
+
+  </div>
+</section>
+
+
+<section class="page" id="page-dashboard">
+  <div class="page-heading"><div><div class="eyebrow">Your activity at a glance</div><h1>Insights Dashboard</h1><p class="muted">Explore saved recommendations and how the application is being used.</p></div><button class="btn btn-secondary" id="refreshDashboard">↻ Refresh insights</button></div>
+  <div class="notice" style="margin-bottom:20px">These insights summarize activity recorded by this application. They do not represent independently measured recycling or environmental impact.</div>
+  <div class="stat-grid">
+    <div class="stat-card"><div class="stat-top"><span class="stat-icon green-bg">✳</span><span class="stat-tag">ALL TIME</span></div><div class="stat-value" id="dashTotal">—</div><div class="stat-label">Recommendations saved</div></div>
+    <div class="stat-card"><div class="stat-top"><span class="stat-icon blue-bg">⌕</span><span class="stat-tag">VARIETY</span></div><div class="stat-value" id="dashUnique">—</div><div class="stat-label">Unique waste descriptions</div></div>
+    <div class="stat-card"><div class="stat-top"><span class="stat-icon yellow-bg">♻</span><span class="stat-tag">TOP CATEGORY</span></div><div class="stat-value" id="dashCategory" style="font-size:20px">—</div><div class="stat-label">Most common category</div></div>
+    <div class="stat-card"><div class="stat-top"><span class="stat-icon purple-bg">⌘</span><span class="stat-tag">PROMPTING</span></div><div class="stat-value" id="dashModes">—</div><div class="stat-label">Prompting methods used</div></div>
+  </div>
+  
+<div class="stat-grid" style="margin-top:20px">
+  <div class="stat-card">
+    <div class="stat-top"><span class="stat-icon green-bg">👍</span><span class="stat-tag">FEEDBACK</span></div>
+    <div class="stat-value" id="feedbackTotal">—</div>
+    <div class="stat-label">Total feedback received</div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-top"><span class="stat-icon blue-bg">✓</span><span class="stat-tag">POSITIVE</span></div>
+    <div class="stat-value" id="feedbackPositive">—</div>
+    <div class="stat-label">Helpful recommendations</div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-top"><span class="stat-icon yellow-bg">👎</span><span class="stat-tag">NEGATIVE</span></div>
+    <div class="stat-value" id="feedbackNegative">—</div>
+    <div class="stat-label">Not helpful recommendations</div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-top"><span class="stat-icon green-bg">✓</span><span class="stat-tag">CATEGORY</span></div>
+    <div class="stat-value" id="feedbackCorrect">—</div>
+    <div class="stat-label">Correct category feedback</div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-top"><span class="stat-icon purple-bg">✕</span><span class="stat-tag">CATEGORY</span></div>
+    <div class="stat-value" id="feedbackIncorrect">—</div>
+    <div class="stat-label">Incorrect category feedback</div>
+  </div>
+</div>
+
+  <div class="dashboard-grid">
+    <div class="panel"><div class="panel-head"><div><h2>Waste category distribution</h2><p class="panel-sub">Saved recommendations by category</p></div><span class="stat-icon green-bg">▥</span></div><div class="panel-body"><div class="bar-list" id="categoryBars"><div class="loading-block">Loading category data…</div></div></div></div>
+    <div class="panel"><div class="panel-head"><div><h2>Prompt method usage</h2><p class="panel-sub">How each method has been used</p></div><span class="stat-icon blue-bg">⌘</span></div><div class="panel-body"><div class="bar-list" id="modeBars"><div class="loading-block">Loading prompt data…</div></div></div></div>
+  </div>
+  <div class="dashboard-grid">
+    <div class="panel"><div class="panel-head"><div><h2>Recent activity</h2><p class="panel-sub">Saved recommendations by day</p></div><span class="stat-icon yellow-bg">◷</span></div><div class="panel-body"><div class="daily-list" id="dailyBars"><div class="loading-block">Loading activity…</div></div></div></div>
+    <div class="panel"><div class="panel-head"><div><h2>Latest recommendations</h2><p class="panel-sub">Most recent saved records</p></div><button class="mini-btn" data-go="history">View history ↗</button></div><div class="panel-body"><div class="recent-list" id="recentActivity"><div class="loading-block">Loading recent activity…</div></div></div></div>
+  </div>
+
+</section>
+
+<section class="page" id="page-evaluation">
+  <div class="page-heading"><div><div class="eyebrow">Experiment with prompt design</div><h1>Prompt Evaluation</h1><p class="muted">Compare Zero-shot, One-shot and Few-shot prompting for the same waste scenario.</p></div></div>
+  <div class="panel"><div class="panel-head"><div><h2>Run a comparison</h2><p class="panel-sub">The system evaluates the same input using all three methods.</p></div><span class="stat-icon purple-bg">⌘</span></div><div class="panel-body">
+    <form id="evaluationForm" class="evaluation-form">
+      <div class="field"><label for="evalWaste">Waste description</label><input id="evalWaste" maxlength="1000" placeholder="e.g. Used aluminium drink can" required></div>
+      <div class="field"><label for="evalCategory">Known category</label><select id="evalCategory"><option value="Auto-detect">Auto-detect</option><option value="Biodegradable">Biodegradable / Organic</option><option value="Recyclable">Recyclable</option><option value="Plastic">Plastic</option><option value="Paper">Paper / Cardboard</option><option value="Glass">Glass</option><option value="Metal">Metal</option><option value="Electronic Waste">Electronic Waste</option><option value="Hazardous">Hazardous</option><option value="General Waste">General Waste</option><option value="Other">Other</option></select></div>
+      <button class="btn btn-primary" id="evaluateBtn" type="submit">Compare methods ↗</button>
+      <button class="btn btn-secondary" id="compareRagBtn" type="button">Compare with / without RAG</button>
+    </form>
+  </div></div>
+  <div id="evaluationOutput"><div class="result-empty panel" style="margin-top:20px;min-height:240px"><div><div class="empty-icon">⌘</div><h3>Evaluation results will appear here</h3><p>Enter a scenario above to compare each method's output and score.</p></div></div></div>
+  <div class="evaluation-note"><strong>Interpretation note:</strong> The score returned by the application is a heuristic completeness indicator based on response characteristics. It is not a verified measure of factual accuracy or environmental safety.</div>
+</section>
+
+<section class="page" id="page-history">
+  <div class="page-heading"><div><div class="eyebrow">Your saved activity</div><h1>Recommendation History</h1><p class="muted">Review earlier recommendations or remove records you no longer need.</p></div><button class="btn btn-secondary" id="refreshHistory">↻ Refresh history</button></div>
+  <div class="panel">
+    <div class="panel-head"><div><h2>Saved recommendations</h2><p class="panel-sub" id="historyCount">Loading your records…</p></div></div>
+    <div class="panel-body" style="padding-bottom:14px"><div class="table-actions"><input class="search-input" id="historySearch" type="search" placeholder="Search waste descriptions…" aria-label="Search history"><button class="btn btn-danger" id="clearHistoryBtn">⌫ Clear all history</button></div></div>
+    <div class="table-wrap"><table><thead><tr><th>Date & time</th><th>Waste description</th><th>Category</th><th>Prompt method</th><th>Action</th></tr></thead><tbody id="historyTableBody"><tr><td colspan="5" class="empty-row">Loading records…</td></tr></tbody></table></div>
+    <div style="padding:16px 22px;color:var(--muted);font-size:10px">History displays up to the latest 100 records returned by the application.</div>
+  </div>
+</section>
+<div class="footer">EcoMind · Intelligent Waste Management & Recycling Advisory System</div>
+</div>
+</main>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script>
+const $ = (s, root=document) => root.querySelector(s);
+const $$ = (s, root=document) => [...root.querySelectorAll(s)];
+let historyRecords = [], currentFollowup = null, toastTimer;
+let followupMessages = [];
+
+function escapeHtml(value) {
+  return String(value ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+function showToast(message, error=false) {
+  const toast=$("#toast"); toast.textContent=message; toast.classList.toggle("error",error); toast.classList.add("show");
+  clearTimeout(toastTimer); toastTimer=setTimeout(()=>toast.classList.remove("show"),3500);
+}
+async function api(url, options={}) {
+  const response=await fetch(url,{headers:{"Content-Type":"application/json",...(options.headers||{})},...options});
+  let data;
+  try { data=await response.json(); } catch { data={error:"The server returned an unreadable response."}; }
+  if(!response.ok) throw new Error(data.error||data.message||`Request failed (${response.status})`);
+  return data;
+}
+function setLoading(button,loading,label) {
+  if(!button)return;
+  if(loading){button.dataset.originalText=button.innerHTML;button.disabled=true;button.innerHTML=`<span class="spinner"></span>${escapeHtml(label||"Working…")}`;}
+  else{button.disabled=false;if(button.dataset.originalText)button.innerHTML=button.dataset.originalText;}
+}
+
+function goToPage(name) {
+    const titles = {
+        welcome: "Welcome to EcoMind",
+        advisor: "AI Waste Advisor",
+        dashboard: "Insights Dashboard",
+        evaluation: "Prompt Evaluation",
+        history: "Recommendation History"
+    };
+
+    document.body.classList.toggle("welcome-screen", name === "welcome");
+
+    $$(".page").forEach(p =>
+        p.classList.toggle("active", p.id === `page-${name}`)
+    );
+
+    $$(".nav-item").forEach(b =>
+        b.classList.toggle("active", b.dataset.page === name)
+    );
+
+    $("#breadcrumbTitle").textContent = titles[name] || "Workspace";
+    $("#sidebar").classList.remove("open");
+
+    window.scrollTo({ top: 0, behavior: "smooth" });
+
+    if (name === "dashboard") loadDashboard();
+    if (name === "history") loadHistory();
+}
+$$(".nav-item").forEach(b=>b.addEventListener("click",()=>goToPage(b.dataset.page)));
+$("#exploreEcoMind").addEventListener("click", () => {
+  goToPage("advisor");
+});
+$$("[data-go]").forEach(b=>b.addEventListener("click",()=>goToPage(b.dataset.go)));
+$("#mobileMenu").addEventListener("click",()=>$("#sidebar").classList.toggle("open"));
+goToPage("welcome");
+$("#heroStart").addEventListener("click",()=>{$("#advisorFormPanel").scrollIntoView({behavior:"smooth",block:"center"});$("#wasteDescription").focus();});
+$$("[data-example]").forEach(b=>b.addEventListener("click",()=>{$("#wasteDescription").value=b.dataset.example;$("#wasteDescription").focus();}));
+
+function getPromptMode(){
+  const mode = $('input[name="promptMode"]:checked')?.value || "zero-shot";
+  if (mode === "one-shot") return "One-shot";
+  if (mode === "few-shot") return "Few-shot";
+  return "Zero-shot";
+}
+function recommendationObject(data){return data.recommendation??data.result??data.advice_result??data;}
+function isFollowup(data){const r=recommendationObject(data);return Boolean(data.needs_follow_up??data.follow_up??r.needs_follow_up??r.follow_up);}
+
+
+function renderRecommendation(data) {
+  const r = recommendationObject(data);
+  const category = r.category || data.category || "Waste guidance";
+  const advice = r.advice || r.recommendation || data.advice || data.message || "";
+  const action = r.action || data.action || "";
+  const explanation = r.explanation || r.reason || data.explanation || "";
+  const question = r.follow_up_question || r.question || data.follow_up_question || data.question || "";
+  const asText = v => typeof v === "string" ? v : JSON.stringify(v, null, 2);
+
+  let html = `<div class="result-content">
+    <div class="result-badge">✦ AI GENERATED GUIDANCE</div>
+    <div class="result-category">${escapeHtml(category)}</div>`;
+
+  if (advice) html += `<div class="result-section" style="border-top:0;padding-top:0;margin-top:0"><h3>🌿 Recommended guidance</h3><p>${escapeHtml(asText(advice))}</p></div>`;
+  if (action) html += `<div class="result-section"><h3>✓ Suggested next action</h3><p>${escapeHtml(asText(action))}</p></div>`;
+  if (explanation) html += `<div class="result-section"><h3>ⓘ Why this approach?</h3><p>${escapeHtml(asText(explanation))}</p></div>`;
+
+  if (!advice && !action && !explanation) {
+    html += `<div class="result-section"><p>${escapeHtml(JSON.stringify(r, null, 2))}</p></div>`;
+  }
+
+  const sources = data.sources || r.sources || [];
+
+  if (sources.length) {
+    html += `<div class="result-section"><h3>📚 Sources used</h3>
+      ${sources.map(source => `
+        <p style="margin-top:8px">
+          <strong>${escapeHtml(source.source || "Solid Waste Management Rules, 2026")}</strong><br>
+          PDF page: ${escapeHtml(source.page ?? "Unknown")}
+        </p>
+      `).join("")}
+    </div>`;
+  } else {
+    html += `<div class="result-section"><h3>📚 Sources used</h3><p>No source passages were retrieved for this recommendation.</p></div>`;
+  }
+
+  html += `<div class="muted" style="margin-top:17px">Check local collection guidance for location-specific disposal requirements.</div>`;
+
+  const recommendationId = data.recommendation_id ?? data.id ?? r.recommendation_id ?? r.id;
+
+  if (recommendationId != null) {
+    html += `
+      <div class="result-section" id="feedbackSection">
+        <h3>💬 Help us improve EcoMind</h3>
+        <p>Was this recommendation helpful?</p>
+        <div style="display:flex;gap:10px;margin:12px 0">
+          <button type="button" class="btn btn-secondary" id="feedbackYes">👍 Helpful</button>
+          <button type="button" class="btn btn-secondary" id="feedbackNo">👎 Not helpful</button>
+        </div>
+        <p>Was the waste category correct?</p>
+        <div style="display:flex;gap:10px;margin:12px 0">
+          <button type="button" class="btn btn-secondary" id="categoryYes">Yes</button>
+          <button type="button" class="btn btn-secondary" id="categoryNo">No</button>
+        </div>
+        <button type="button" class="btn btn-primary" id="submitFeedbackBtn" disabled>Submit feedback</button>
+        <p id="feedbackMessage" class="muted" style="margin-top:10px"></p>
+      </div>`;
+  }
+
+  // Permanent chat box for follow-up questions.
+  html += `
+    <div class="result-section followup-box">
+      <h3>💬 Continue your conversation</h3>
+      <p>${question ? escapeHtml(question) : "Have another question about this waste item? Ask EcoMind below."}</p>
+      <form id="followupForm">
+        <div class="field">
+          <label for="followupAnswer">Your follow-up question</label>
+          <textarea id="followupAnswer" required
+            placeholder="Ask another question about this waste item..."></textarea>
+        </div>
+        <button class="btn btn-primary" type="submit">Send message ↗</button>
+      </form>
+    </div>
+  `;
+
+  html += `</div>`;
+  $("#recommendationResult").innerHTML = html;
+
+  // Keep the current waste details for the next question.
+  currentFollowup = {
+    waste: $("#wasteDescription").value.trim(),
+    category: $("#wasteCategory").value,
+    mode: getPromptMode()
+  };
+
+  if (recommendationId != null) {
+    let useful = null;
+    let categoryCorrect = null;
+
+    const yes = $("#feedbackYes");
+    const no = $("#feedbackNo");
+    const categoryYes = $("#categoryYes");
+    const categoryNo = $("#categoryNo");
+    const submit = $("#submitFeedbackBtn");
+    const message = $("#feedbackMessage");
+
+    function selectButton(selected, other) {
+      selected.classList.add("btn-primary");
+      other.classList.remove("btn-primary");
+    }
+
+    yes.addEventListener("click", () => {
+      useful = true;
+      selectButton(yes, no);
+      submit.disabled = categoryCorrect === null;
+    });
+
+    no.addEventListener("click", () => {
+      useful = false;
+      selectButton(no, yes);
+      submit.disabled = categoryCorrect === null;
+    });
+
+    categoryYes.addEventListener("click", () => {
+      categoryCorrect = true;
+      selectButton(categoryYes, categoryNo);
+      submit.disabled = useful === null;
+    });
+
+    categoryNo.addEventListener("click", () => {
+      categoryCorrect = false;
+      selectButton(categoryNo, categoryYes);
+      submit.disabled = useful === null;
+    });
+
+    submit.addEventListener("click", async () => {
+      submit.disabled = true;
+      message.textContent = "Saving feedback...";
+
+      try {
+        const result = await api("/feedback", {
+          method: "POST",
+          body: JSON.stringify({
+            recommendation_id: Number(recommendationId),
+            useful: useful,
+            category_correct: categoryCorrect
+          })
+        });
+
+        message.textContent = result.message || "Feedback saved successfully!";
+        showToast("Thank you for your feedback!");
+
+        if ($("#page-dashboard").classList.contains("active")) {
+          loadDashboard();
+        }
+      } catch (error) {
+        message.textContent = error.message || "Could not save feedback.";
+        submit.disabled = false;
+      }
+    });
+  }
+
+  // Attach the follow-up form after every recommendation.
+  $("#followupForm").addEventListener("submit", submitFollowup);
+}
+
+
+
+async function submitAdvice(description, category, mode, context = "", button = null) {
+  const payload = {
+    waste: description,
+    waste_description: description,
+    category,
+    mode,
+    prompt_mode: mode
+  };
+
+  // Add the user's latest follow-up to the conversation.
+  if (context) {
+    followupMessages.push({
+      role: "user",
+      content: context
+    });
+  }
+
+  // Send the complete conversation history to the backend.
+  if (followupMessages.length > 0) {
+    payload.conversation_context = followupMessages
+      .map(message => `${message.role}: ${message.content}`)
+      .join("\n\n");
+  }
+
+  try {
+    const data = await api("/get_advice", {
+      method: "POST",
+      body: JSON.stringify(payload)
+    });
+
+    // Save the AI response for the next follow-up.
+    const assistantReply = [
+      data.advice || "",
+      data.action || "",
+      data.follow_up_question || ""
+    ].filter(Boolean).join("\n");
+
+    if (assistantReply) {
+      followupMessages.push({
+        role: "assistant",
+        content: assistantReply
+      });
+    }
+
+    renderRecommendation(data);
+
+    if (data.error) showToast(data.error, true);
+    else showToast("Recommendation generated and saved.");
+
+    if ($("#page-dashboard").classList.contains("active")) {
+      loadDashboard();
+    }
+
+    return data;
+  } catch (e) {
+    $("#recommendationResult").innerHTML =
+      `<div class="notice">${escapeHtml(e.message)}</div>`;
+    showToast(e.message, true);
+    return null;
+  } finally {
+    if (button) setLoading(button, false);
+  }
+}
+
+$("#advisorForm").addEventListener("submit", async e => {
+  e.preventDefault();
+
+  const description = $("#wasteDescription").value.trim();
+  const category = $("#wasteCategory").value;
+  const mode = getPromptMode();
+
+  if (!description) {
+    return showToast("Enter a waste description first.", true);
+  }
+
+  // Start a fresh conversation for a new waste query.
+  followupMessages = [{
+    role: "user",
+    content: description
+  }];
+
+  const button = $("#getAdviceBtn");
+  setLoading(button, true, "Generating recommendation…");
+
+  await submitAdvice(description, category, mode, "", button);
+});
+
+
+async function submitFollowup(e) {
+  e.preventDefault();
+
+  if (!currentFollowup) return;
+
+  const answer = $("#followupAnswer").value.trim();
+  if (!answer) return;
+
+  const form = $("#followupForm");
+  const button = form.querySelector("button");
+
+  setLoading(button, true, "Updating recommendation…");
+
+  await submitAdvice(
+    currentFollowup.waste,
+    currentFollowup.category,
+    currentFollowup.mode,
+    answer,
+    button
+  );
+}
+
+async function loadDashboard() {
+  console.log("loadDashboard started");
+  try {
+    const d=await api("/dashboard");
+    console.log("Dashboard data received:", d);
+    $("#dashTotal").textContent=Number(d.total_recommendations??d.total??0).toLocaleString();
+    $("#dashUnique").textContent=Number(d.unique_waste_descriptions??d.unique_waste??0).toLocaleString();
+    $("#dashCategory").textContent=d.most_common_category||"—";
+    const modes=d.prompt_mode_usage||d.prompt_modes||{};
+    $("#dashModes").textContent=(Array.isArray(modes)?modes.length:Object.keys(modes).length)||"0";
+    
+const feedback = d.feedback_stats || {};
+
+$("#feedbackTotal").textContent =
+  Number(feedback.total_feedback || 0).toLocaleString();
+
+$("#feedbackPositive").textContent =
+  Number(feedback.positive_feedback || 0).toLocaleString();
+
+$("#feedbackNegative").textContent =
+  Number(feedback.negative_feedback || 0).toLocaleString();
+
+$("#feedbackCorrect").textContent =
+  Number(feedback.correct_categories || 0).toLocaleString();
+
+$("#feedbackIncorrect").textContent =
+  Number(feedback.incorrect_categories || 0).toLocaleString();
+
+    renderBarList("#categoryBars",d.category_distribution||d.categories||{},"bar-fill","No category data yet");
+    renderBarList("#modeBars",modes,"bar-fill mode-fill","No prompt usage data yet");
+    renderDaily(d.daily_activity||d.daily||[]);
+    renderRecent(d.recent_recommendations||d.recent_activity||[]);
+  } catch(e) {
+    const msg=`<div class="notice">Couldn't load dashboard data: ${escapeHtml(e.message)}.</div>`;
+    ["#categoryBars","#modeBars","#dailyBars","#recentActivity"].forEach(s=>$(s).innerHTML=msg);showToast("Dashboard could not be loaded.",true);
+  }
+}
+function toEntries(data) {
+  if(Array.isArray(data))return data.map(x=>x&&typeof x==="object"?[x.category??x.mode??x.date??x.day??x.label??"Other",Number(x.count??x.total??x.value??x.recommendations??0)||0]:[String(x),0]);
+  if(data&&typeof data==="object")return Object.entries(data).map(([k,v])=>[k,Number(typeof v==="object"?(v.count??v.total??v.value??0):v)||0]);
+  return [];
+}
+function renderBarList(selector,source,fillClass,emptyText) {
+  const entries=toEntries(source).sort((a,b)=>b[1]-a[1]),max=Math.max(1,...entries.map(x=>x[1]));
+  if(!entries.length||entries.every(x=>x[1]===0)){$(selector).innerHTML=`<div class="loading-block">${escapeHtml(emptyText)}</div>`;return;}
+  $(selector).innerHTML=entries.map(([label,value])=>`<div class="bar-row"><div class="bar-label"><strong>${escapeHtml(label)}</strong><span>${value.toLocaleString()}</span></div><div class="bar-track"><div class="${fillClass}" style="width:${Math.max(3,value/max*100)}%"></div></div></div>`).join("");
+}
+function dateOnly(value) {
+  if (!value) return "";
+  return String(value).split("T")[0];
+}
+function renderDaily(source) {
+  const entries=Array.isArray(source)?source.map(x=>Array.isArray(x)?[x[0],Number(x[1])||0]:[x.date??x.day??x.label??"",Number(x.count??x.total??x.value??0)||0]):toEntries(source);
+  const max=Math.max(1,...entries.map(x=>x[1]));
+  if(!entries.length){$("#dailyBars").innerHTML=`<div class="loading-block">No activity recorded yet.</div>`;return;}
+  $("#dailyBars").innerHTML=entries.map(([day,count])=>`<div class="daily-row"><span>${escapeHtml(dateOnly(day)||day||"—")}</span><div class="daily-track"><div class="daily-fill" style="width:${count?Math.max(3,count/max*100):0}%"></div></div><strong>${count}</strong></div>`).join("");
+}
+function renderRecent(records) {
+  if(!Array.isArray(records)||!records.length){$("#recentActivity").innerHTML=`<div class="loading-block">No recommendations saved yet.</div>`;return;}
+  $("#recentActivity").innerHTML=records.slice(0,5).map(r=>`<div class="recent-item"><div class="recent-symbol">♻</div><div class="recent-main"><strong title="${escapeHtml(recordDescription(r))}">${escapeHtml(recordDescription(r))}</strong><span>${escapeHtml(formatDate(recordDate(r)))}</span></div><span class="recent-category">${escapeHtml(recordCategory(r))}</span></div>`).join("");
+}
+function recordDescription(r) {
+  return r.waste_description || r.description || "Waste recommendation";
+}
+
+function recordDate(r) {
+  return r.created_at || r.date || "";
+}
+
+function recordCategory(r) {
+  return r.category || "Other / Unspecified";
+}
+function recordMode(r) {
+  return normalizeMode(r.prompt_mode || r.mode || "Zero-shot");
+}
+
+function formatDate(value) {
+  if (!value) return "—";
+
+  const date = new Date(value);
+
+  if (isNaN(date.getTime())) return "—";
+
+  return date.toLocaleString("en-IN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit"
+  });
+}
+async function loadHistory() {
+  $("#historyTableBody").innerHTML=`<tr><td colspan="5" class="empty-row">Loading records…</td></tr>`;
+  try {
+    const d = await api("/history");
+
+console.log("History API response:", d);
+
+historyRecords = Array.isArray(d)
+  ? d
+  : (d.records || d.history || d.recommendations || []);
+
+console.log("History records loaded:", historyRecords.length);
+
+renderHistory();
+    console.log("History records loaded:", historyRecords.length, historyRecords);
+  } catch(e) {$("#historyTableBody").innerHTML=`<tr><td colspan="5" class="empty-row">Couldn't load history: ${escapeHtml(e.message)}</td></tr>`;$("#historyCount").textContent="History unavailable";showToast("History could not be loaded.",true);}
+}
+
+function renderHistory() {
+    console.log("Rendering history...");
+
+    const searchBox = document.getElementById("historySearch");
+    const tableBody = document.getElementById("historyTableBody");
+    const countBox = document.getElementById("historyCount");
+
+    if (!searchBox || !tableBody || !countBox) {
+        console.error("History HTML elements missing.");
+        return;
+    }
+
+    const safe = value => String(value ?? "").replace(
+        /[&<>"']/g,
+        char => ({
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#39;"
+        })[char]
+    );
+
+    const q = searchBox.value.trim().toLowerCase();
+
+    const records = historyRecords.filter(r => {
+        const description = r.waste_description || r.description || "";
+        const category = r.category || "Other / Unspecified";
+        const mode = r.prompt_mode || r.mode || "Zero-shot";
+
+        return `${description} ${category} ${mode}`
+            .toLowerCase().includes(q);
+    });
+
+    countBox.textContent =
+        `${records.length} records shown · ${historyRecords.length} loaded`;
+
+    if (!records.length) {
+        tableBody.innerHTML =
+            `<tr><td colspan="5" class="empty-row">No recommendations found.</td></tr>`;
+        return;
+    }
+
+    tableBody.innerHTML = records.map(r => {
+        const dateValue = r.created_at || r.date || "";
+        const date = dateValue ? new Date(dateValue) : null;
+        const formattedDate = date && !isNaN(date.getTime())
+            ? date.toLocaleString("en-IN")
+            : "—";
+
+        const description = r.waste_description || r.description || "Waste recommendation";
+        const category = r.category || "Other / Unspecified";
+        const mode = r.prompt_mode || r.mode || "Zero-shot";
+        const id = Number(r.id);
+
+        return `
+            <tr>
+                <td>${safe(formattedDate)}</td>
+                <td><div class="table-main">${safe(description)}</div></td>
+                <td>${safe(category)}</td>
+                <td><span class="mode-badge">${safe(mode)}</span></td>
+                <td>
+                    ${Number.isFinite(id)
+                        ? `<button class="mini-btn" data-delete-id="${id}">Delete</button>`
+                        : "—"}
+                </td>
+            </tr>
+        `;
+    }).join("");
+
+    tableBody.querySelectorAll("[data-delete-id]").forEach(button => {
+        button.addEventListener("click", () => {
+            deleteRecord(button.dataset.deleteId);
+        });
+    });
+
+    console.log("History table rendered successfully.");
+}
+
+$("#historySearch").addEventListener("input",renderHistory);
+$("#refreshHistory").addEventListener("click",loadHistory);
+$("#refreshDashboard").addEventListener("click",loadDashboard);
+async function deleteRecord(id) {
+  if(!confirm("Delete this recommendation from history?"))return;
+  try{await api(`/history/${encodeURIComponent(id)}`,{method:"DELETE"});showToast("Record deleted.");await loadHistory();}
+  catch(e){showToast(e.message,true);}
+}
+$("#clearHistoryBtn").addEventListener("click",async()=>{
+  if(!historyRecords.length)return showToast("There are no records to clear.");
+  if(!confirm("Clear all recommendation history? This cannot be undone."))return;
+  const b=$("#clearHistoryBtn");setLoading(b,true,"Clearing…");
+  try{await api("/history/clear",{method:"POST",body:JSON.stringify({})});showToast("Recommendation history cleared.");await loadHistory();if($("#page-dashboard").classList.contains("active"))await loadDashboard();}
+  catch(e){showToast(e.message,true);}finally{setLoading(b,false);}
+});
+function evaluationResults(d){return Array.isArray(d)?d:(d.results||d.evaluations||d.comparison||d.scores||[]);}
+function evaluationMode(item,i){return normalizeMode(item.mode||item.prompt_mode||item.method||["Zero-shot","One-shot","Few-shot"][i]||"Prompt method");}
+function evaluationScore(item){const n=Number(item.score??item.heuristic_score??item.completeness_score??item.evaluation_score??0);return Number.isFinite(n)?Math.max(0,Math.min(100,n)):0;}
+function evaluationText(item) {
+  const v=item.recommendation??item.result??item.advice??item.output??item.response??item;
+  if(typeof v==="string")return v;
+  if(v&&typeof v==="object")return [v.category?`Category: ${v.category}`:"",v.advice||"",v.action?`Suggested action: ${v.action}`:"",v.explanation||""].filter(Boolean).join("\n\n")||JSON.stringify(v,null,2);
+  return String(v??"");
+}
+$("#evaluationForm").addEventListener("submit",async e=>{
+  e.preventDefault();const waste=$("#evalWaste").value.trim(),category=$("#evalCategory").value;
+  if(!waste)return showToast("Enter a waste description to compare.",true);
+  const b=$("#evaluateBtn");setLoading(b,true,"Comparing prompts…");
+  $("#evaluationOutput").innerHTML=`<div class="panel loading-block" style="margin-top:20px"><span class="spinner"></span><br>Evaluating three prompting methods. This may take a little while…</div>`;
+  try{
+    const d=await api("/evaluate",{method:"POST",body:JSON.stringify({waste,waste_description:waste,category})});
+    const results=evaluationResults(d);
+    if(!results.length){$("#evaluationOutput").innerHTML=`<div class="notice" style="margin-top:20px">The evaluation response format wasn't recognised: ${escapeHtml(JSON.stringify(d))}</div>`;return;}
+    $("#evaluationOutput").innerHTML=`<div class="evaluation-results">${results.map((item,i)=>{
+      const score=evaluationScore(item),mode=evaluationMode(item,i),content=evaluationText(item);
+      return `<article class="eval-card"><div class="eval-card-head"><strong>${escapeHtml(mode)}</strong><div class="eval-score">${score}<span style="font-size:12px;color:var(--muted)"> / 100</span></div><div class="score-track"><div class="score-fill" style="width:${score}%"></div></div><div class="muted" style="margin-top:7px">Heuristic completeness score</div></div><div class="eval-card-body"><p>${escapeHtml(content)}</p></div></article>`;
+    }).join("")}</div>`;
+    showToast("Prompt comparison completed.");
+  }catch(e){$("#evaluationOutput").innerHTML=`<div class="notice" style="margin-top:20px">Evaluation failed: ${escapeHtml(e.message)}. Check Flask and try again.</div>`;showToast(e.message,true);}
+  finally{setLoading(b,false);}
+});
+
+$("#compareRagBtn").addEventListener("click", async () => {
+  const waste = $("#evalWaste").value.trim();
+  const category = $("#evalCategory").value;
+  if (!waste) return showToast("Enter a waste description first.", true);
+
+  const button = $("#compareRagBtn");
+  setLoading(button, true, "Comparing RAG…");
+  $("#evaluationOutput").innerHTML = `<div class="panel loading-block" style="margin-top:20px"><span class="spinner"></span><br>Comparing responses with and without retrieved rules. This may take a little while…</div>`;
+
+  try {
+    const data = await api("/evaluate_rag", {
+      method: "POST",
+      body: JSON.stringify({ waste, category, mode: getPromptMode() })
+    });
+    const without = data.without_rag || {};
+    const withRag = data.with_rag || {};
+    const sources = withRag.sources || [];
+    const sourceHtml = sources.length
+      ? sources.map(source => `<p>${escapeHtml(source.source)} — PDF page ${escapeHtml(source.page)}</p>`).join("")
+      : `<p>No source passages were retrieved.</p>`;
+
+    $("#evaluationOutput").innerHTML = `
+      <div class="evaluation-results" style="grid-template-columns:repeat(2,minmax(0,1fr))">
+        <article class="eval-card">
+          <div class="eval-card-head"><strong>Without RAG</strong><div class="eval-score">${Number(without.score ?? 0)}<span style="font-size:12px;color:var(--muted)"> / 100</span></div><div class="muted">Heuristic completeness score</div></div>
+          <div class="eval-card-body"><p>${escapeHtml(evaluationText(without.result || {}))}</p></div>
+        </article>
+        <article class="eval-card">
+          <div class="eval-card-head"><strong>With RAG</strong><div class="eval-score">${Number(withRag.score ?? 0)}<span style="font-size:12px;color:var(--muted)"> / 100</span></div><div class="muted">Heuristic completeness score</div></div>
+          <div class="eval-card-body"><p>${escapeHtml(evaluationText(withRag.result || {}))}</p><div class="result-section"><h3>📚 Sources used</h3>${sourceHtml}</div></div>
+        </article>
+      </div>
+      <div class="evaluation-note">${escapeHtml(data.note || "Scores indicate completeness only; they do not prove factual accuracy.")}</div>`;
+    showToast("RAG comparison completed.");
+  } catch (error) {
+    $("#evaluationOutput").innerHTML = `<div class="notice" style="margin-top:20px">Comparison failed: ${escapeHtml(error.message)}</div>`;
+    showToast(error.message, true);
+  } finally {
+    setLoading(button, false);
+  }
+});
+
+// ---------------- IMAGE PREVIEW ----------------
+
+let selectedImageUrl = null;
+
+$("#wasteImage").addEventListener("change", function () {
+  const file = this.files[0];
+  const previewContainer = $("#imagePreviewContainer");
+  const preview = $("#imagePreview");
+
+  if (selectedImageUrl) {
+    URL.revokeObjectURL(selectedImageUrl);
+    selectedImageUrl = null;
+  }
+
+  $("#imageResult").innerHTML = "";
+
+  if (!file) {
+    previewContainer.style.display = "none";
+    return;
+  }
+
+  const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+
+  if (!allowedTypes.includes(file.type)) {
+    this.value = "";
+    previewContainer.style.display = "none";
+    showToast("Please select a JPG, PNG or WEBP image.", true);
+    return;
+  }
+
+  if (file.size > 5 * 1024 * 1024) {
+    this.value = "";
+    previewContainer.style.display = "none";
+    showToast("Image size must not exceed 5 MB.", true);
+    return;
+  }
+
+  selectedImageUrl = URL.createObjectURL(file);
+  preview.src = selectedImageUrl;
+  previewContainer.style.display = "block";
+});
+
+
+// ---------------- IMAGE CLASSIFICATION ----------------
+
+$("#imageForm").addEventListener("submit", async function (e) {
+  e.preventDefault();
+
+  const file = $("#wasteImage").files[0];
+
+  if (!file) {
+    showToast("Please select an image first.", true);
+    return;
+  }
+
+  const button = $("#classifyImageBtn");
+  const output = $("#imageResult");
+
+  const formData = new FormData();
+  formData.append("image", file);
+
+  setLoading(button, true, "Analysing image...");
+
+  output.innerHTML = `
+    <div class="loading-block">
+      <span class="spinner"></span>
+      <br>
+      Gemini is identifying the waste and preparing recommendations...
+    </div>
+  `;
+
+  try {
+    // Do not set Content-Type manually.
+    // The browser adds the multipart boundary automatically.
+    const response = await fetch("/classify_image", {
+      method: "POST",
+      body: formData
+    });
+
+    let data;
+
+    try {
+      data = await response.json();
+    } catch {
+      throw new Error("The server returned an unreadable response.");
+    }
+
+    if (!response.ok) {
+      throw new Error(data.error || "Image classification failed.");
+    }
+
+    const identification = data.identification || {};
+
+    let html = `
+      <div class="result-content">
+        <div class="result-badge">✦ GEMINI IMAGE CLASSIFICATION</div>
+
+        <div class="result-section">
+          <h3>🔍 Identified waste</h3>
+          <p>${escapeHtml(identification.description || "Not available")}</p>
+        </div>
+
+        <div class="result-section">
+          <h3>♻ Waste category</h3>
+          <p>${escapeHtml(identification.category || data.category || "Not available")}</p>
+        </div>
+
+        <div class="result-section">
+          <h3>Confidence level</h3>
+          <p>${escapeHtml(identification.confidence || "Not available")}</p>
+        </div>
+
+        <div class="result-category">
+          ${escapeHtml(data.category || identification.category || "Waste guidance")}
+        </div>
+
+        <div class="result-section">
+          <h3>🌿 Recommended guidance</h3>
+          <p>${escapeHtml(data.advice || "No advice returned.")}</p>
+        </div>
+
+        <div class="result-section">
+          <h3>✓ Suggested next action</h3>
+          <p>${escapeHtml(data.action || "Check local waste-management guidance.")}</p>
+        </div>
+
+        <div class="result-section">
+          <h3>📚 Sources used</h3>
+          ${
+            Array.isArray(data.sources) && data.sources.length
+              ? data.sources.map(source => `
+                  <p style="margin-top:8px">
+                    <strong>${escapeHtml(source.source || "Knowledge base")}</strong>
+                    <br>
+                    PDF page: ${escapeHtml(source.page ?? "Unknown")}
+                  </p>
+                `).join("")
+              : "<p>No source passages were retrieved.</p>"
+          }
+        </div>
+
+        <div class="notice" style="margin-top:15px">
+          This recommendation is AI-generated. Verify the material and follow local collection rules.
+        </div>
+      </div>
+    `;
+
+    output.innerHTML = html;
+
+    showToast("Image classification completed and recommendation saved.");
+
+    if ($("#page-dashboard").classList.contains("active")) {
+      loadDashboard();
+    }
+
+    if ($("#page-history").classList.contains("active")) {
+      loadHistory();
+    }
+
+  } catch (error) {
+    output.innerHTML = `
+      <div class="notice">
+        ${escapeHtml(error.message)}
+      </div>
+    `;
+
+    showToast(error.message, true);
+
+  } finally {
+    setLoading(button, false);
+  }
+});
+
+</script>
+</body>
+</html>
